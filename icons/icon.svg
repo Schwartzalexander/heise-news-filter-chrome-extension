@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Heise News Filter Icon">
+  <defs>
+    <linearGradient id="background" x1="16" y1="12" x2="112" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0b74d1"/>
+      <stop offset="1" stop-color="#003b73"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#background)"/>
+  <path d="M33 34h15v23h22V34h15v60H70V70H48v24H33V34Z" fill="#fff"/>
+  <rect x="70" y="68" width="36" height="36" rx="8" fill="#fff"/>
+  <path d="M79 86.5 86.2 94 99 78" fill="none" stroke="#007a3d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Heise-News-Filter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup">
+    <header class="header">
+      <img src="icons/icon.svg" alt="" class="logo">
+      <div>
+        <h1>Heise-News-Filter</h1>
+        <p>Blendet Einträge im heise-Newsticker aus, deren Kategorie hier aktiviert ist.</p>
+      </div>
+    </header>
+
+    <section class="controls" aria-labelledby="category-heading">
+      <div class="section-title">
+        <h2 id="category-heading">Ausgeblendete Kategorien</h2>
+        <button id="reset-button" type="button">Standard</button>
+      </div>
+      <div id="category-list" class="category-list" aria-live="polite"></div>
+    </section>
+
+    <p id="status" class="status" role="status"></p>
+  </main>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
