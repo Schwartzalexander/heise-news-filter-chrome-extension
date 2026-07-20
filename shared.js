@@ -1,4 +1,23 @@
 const DEFAULT_HIDDEN_CATEGORIES = ["bestenlisten", "heise+ exklusiv"];
+const DEFAULT_HIDDEN_TITLE_FILTERS = [];
+
+const TITLE_FILTERS = [
+  {
+    id: "daily-summary",
+    label: "Tageskurzzusammenfassungen",
+    pattern: /^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag):\s/i
+  },
+  {
+    id: "missing-link",
+    label: "Missing Link",
+    pattern: /^Missing Link:\s/i
+  },
+  {
+    id: "zahlen-bitte",
+    label: "Zahlen, bitte",
+    pattern: /^Zahlen, bitte:\s/i
+  }
+];
 
 const SEEDED_CATEGORIES = [
   "bestenlisten",
@@ -13,11 +32,13 @@ const SEEDED_CATEGORIES = [
   "heise+ exklusiv",
   "iX Magazin",
   "Mac & i Magazin",
-  "Make Magazin"
+  "Make Magazin",
+  "WTF"
 ];
 
 const STORAGE_KEYS = {
   hiddenCategories: "hiddenCategories",
+  hiddenTitleFilters: "hiddenTitleFilters",
   knownCategories: "knownCategories"
 };
 
@@ -31,6 +52,11 @@ function sortCategories(categories) {
 
 function uniqueCategories(categories) {
   return sortCategories([...new Set(categories.map(normalizeCategory).filter(Boolean))]);
+}
+
+function uniqueTitleFilterIds(filterIds) {
+  const validIds = new Set(TITLE_FILTERS.map((filter) => filter.id));
+  return [...new Set(filterIds)].filter((filterId) => validIds.has(filterId));
 }
 
 function storageGet(defaults) {

@@ -1,7 +1,9 @@
 const listElement = document.querySelector("#category-list");
+const titleFilterListElement = document.querySelector("#title-filter-list");
 const statusElement = document.querySelector("#status");
 const resetButton = document.querySelector("#reset-button");
 let hiddenCategories = new Set(DEFAULT_HIDDEN_CATEGORIES);
+let hiddenTitleFilters = new Set(DEFAULT_HIDDEN_TITLE_FILTERS);
 let statusTimer;
 
 function showStatus(message) {
@@ -14,6 +16,11 @@ function showStatus(message) {
 
 async function saveHiddenCategories() {
   await storageSet({ [STORAGE_KEYS.hiddenCategories]: sortCategories(hiddenCategories) });
+  showStatus("Einstellung gespeichert.");
+}
+
+async function saveHiddenTitleFilters() {
+  await storageSet({ [STORAGE_KEYS.hiddenTitleFilters]: uniqueTitleFilterIds([...hiddenTitleFilters]) });
   showStatus("Einstellung gespeichert.");
 }
 
@@ -41,17 +48,47 @@ function createCategoryOption(category) {
   return label;
 }
 
+function createTitleFilterOption(filter) {
+  const label = document.createElement("label");
+  label.className = "category-option";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = hiddenTitleFilters.has(filter.id);
+  checkbox.addEventListener("change", async () => {
+    if (checkbox.checked) {
+      hiddenTitleFilters.add(filter.id);
+    } else {
+      hiddenTitleFilters.delete(filter.id);
+    }
+
+    await saveHiddenTitleFilters();
+  });
+
+  const text = document.createElement("span");
+  text.textContent = filter.label;
+
+  label.append(checkbox, text);
+  return label;
+}
+
 function renderCategories(categories) {
   listElement.replaceChildren(...categories.map(createCategoryOption));
+}
+
+function renderTitleFilters() {
+  titleFilterListElement.replaceChildren(...TITLE_FILTERS.map(createTitleFilterOption));
 }
 
 async function loadPopup() {
   const stored = await storageGet({
     [STORAGE_KEYS.hiddenCategories]: DEFAULT_HIDDEN_CATEGORIES,
+    [STORAGE_KEYS.hiddenTitleFilters]: DEFAULT_HIDDEN_TITLE_FILTERS,
     [STORAGE_KEYS.knownCategories]: SEEDED_CATEGORIES
   });
 
   hiddenCategories = new Set(uniqueCategories(stored[STORAGE_KEYS.hiddenCategories]));
+  hiddenTitleFilters = new Set(uniqueTitleFilterIds(stored[STORAGE_KEYS.hiddenTitleFilters]));
   const categories = uniqueCategories([
     ...SEEDED_CATEGORIES,
     ...stored[STORAGE_KEYS.knownCategories]
@@ -59,11 +96,14 @@ async function loadPopup() {
 
   await storageSet({ [STORAGE_KEYS.knownCategories]: categories });
   renderCategories(categories);
+  renderTitleFilters();
 }
 
 resetButton.addEventListener("click", async () => {
   hiddenCategories = new Set(DEFAULT_HIDDEN_CATEGORIES);
+  hiddenTitleFilters = new Set(DEFAULT_HIDDEN_TITLE_FILTERS);
   await saveHiddenCategories();
+  await saveHiddenTitleFilters();
   await loadPopup();
 });
 

@@ -1,22 +1,29 @@
 (async function () {
   const hiddenAttribute = "data-heise-news-filter-hidden";
   let hiddenCategories = new Set(DEFAULT_HIDDEN_CATEGORIES);
+  let hiddenTitleFilters = new Set(DEFAULT_HIDDEN_TITLE_FILTERS);
   let knownCategories = new Set(SEEDED_CATEGORIES);
   let observer;
 
-  function findCategory(article) {
+  function findCategories(article) {
     const meta = article.querySelector(".typo-meta.text-accent");
 
     if (!meta) {
-      return "";
+      return [];
     }
 
-    const visibleSpans = [...meta.querySelectorAll("span")]
+    return [...meta.querySelectorAll("span")]
       .filter((span) => !span.classList.contains("sr-only"))
       .map((span) => normalizeCategory(span.textContent || ""))
       .filter(Boolean);
+  }
 
-    return visibleSpans.at(-1) || "";
+  function findTitle(article) {
+    return article.querySelector("h3")?.textContent?.replace(/\s+/g, " ").trim() || "";
+  }
+
+  function isTitleHidden(title) {
+    return TITLE_FILTERS.some((filter) => hiddenTitleFilters.has(filter.id) && filter.pattern.test(title));
   }
 
   function getArticles() {
@@ -39,12 +46,11 @@
     const foundCategories = [];
 
     for (const article of getArticles()) {
-      const category = findCategory(article);
-      const shouldHide = category && hiddenCategories.has(category);
+      const categories = findCategories(article);
+      const title = findTitle(article);
+      const shouldHide = categories.some((category) => hiddenCategories.has(category)) || isTitleHidden(title);
 
-      if (category) {
-        foundCategories.push(category);
-      }
+      foundCategories.push(...categories);
 
       article.hidden = shouldHide;
       article.toggleAttribute(hiddenAttribute, shouldHide);
@@ -56,10 +62,12 @@
   async function loadSettings() {
     const stored = await storageGet({
       [STORAGE_KEYS.hiddenCategories]: DEFAULT_HIDDEN_CATEGORIES,
+      [STORAGE_KEYS.hiddenTitleFilters]: DEFAULT_HIDDEN_TITLE_FILTERS,
       [STORAGE_KEYS.knownCategories]: SEEDED_CATEGORIES
     });
 
     hiddenCategories = new Set(uniqueCategories(stored[STORAGE_KEYS.hiddenCategories]));
+    hiddenTitleFilters = new Set(uniqueTitleFilterIds(stored[STORAGE_KEYS.hiddenTitleFilters]));
     knownCategories = new Set(uniqueCategories([
       ...SEEDED_CATEGORIES,
       ...stored[STORAGE_KEYS.knownCategories]
@@ -69,12 +77,21 @@
   }
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName !== "sync" || !changes[STORAGE_KEYS.hiddenCategories]) {
+    if (areaName !== "sync") {
       return;
     }
 
-    hiddenCategories = new Set(uniqueCategories(changes[STORAGE_KEYS.hiddenCategories].newValue || []));
-    applyFilters();
+    if (changes[STORAGE_KEYS.hiddenCategories]) {
+      hiddenCategories = new Set(uniqueCategories(changes[STORAGE_KEYS.hiddenCategories].newValue || []));
+    }
+
+    if (changes[STORAGE_KEYS.hiddenTitleFilters]) {
+      hiddenTitleFilters = new Set(uniqueTitleFilterIds(changes[STORAGE_KEYS.hiddenTitleFilters].newValue || []));
+    }
+
+    if (changes[STORAGE_KEYS.hiddenCategories] || changes[STORAGE_KEYS.hiddenTitleFilters]) {
+      applyFilters();
+    }
   });
 
   await loadSettings();

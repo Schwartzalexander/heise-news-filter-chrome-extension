@@ -12,7 +12,7 @@
       <img src="icons/icon.svg" alt="" class="logo">
       <div>
         <h1>Heise-News-Filter</h1>
-        <p>Blendet Einträge im heise-Newsticker aus, deren Kategorie hier aktiviert ist.</p>
+        <p>Blendet Einträge im heise-Newsticker nach aktivierten Kategorien und Rubriken aus.</p>
       </div>
     </header>
 
@@ -22,6 +22,13 @@
         <button id="reset-button" type="button">Standard</button>
       </div>
       <div id="category-list" class="category-list" aria-live="polite"></div>
+    </section>
+
+    <section class="controls" aria-labelledby="title-filter-heading">
+      <div class="section-title">
+        <h2 id="title-filter-heading">Ausgeblendete Rubriken</h2>
+      </div>
+      <div id="title-filter-list" class="category-list" aria-live="polite"></div>
     </section>
 
     <p id="status" class="status" role="status"></p>
