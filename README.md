@@ -4,14 +4,17 @@ Chrome-Extension zum Ausblenden unerwünschter Einträge im heise-Newsticker.
 
 ## Funktionen
 
-- filtert Newsticker-Einträge auf `heise.de` anhand der Kategorien im Meta-Bereich des Artikels
-- blendet standardmäßig `bestenlisten` und `heise+ exklusiv` aus
-- unterstützt zusätzliche Kategorien wie `WTF`
+- filtert Newsticker-Einträge auf `heise.de` anhand der Kategorien im Meta-Bereich aktueller Newsticker- und Archiv-Teaser
+- blendet standardmäßig alle bekannten Kategorien außer `heise online` aus
+- unterstützt zusätzliche Kategorien wie `Alert`, `Angebot`, `Update` und `WTF`
 - erkennt weitere Kategorien beim Besuch der Seite automatisch und zeigt sie später im Popup an
-- kann regelmäßige Rubriken anhand des Titels ausblenden:
+- blendet standardmäßig alle regelmäßigen Rubriken anhand des Titels aus:
   - Tageskurzzusammenfassungen mit `Montag:` bis `Sonntag:`
   - `Missing Link:`
   - `Zahlen, bitte:`
+  - `#TGIQF`
+  - `Post zum Freitag`
+  - `Kommentar:`
 - ist über das Popup der Extension konfigurierbar
 - speichert Einstellungen per Chrome-Sync-Storage
 
@@ -22,7 +25,7 @@ Chrome-Extension zum Ausblenden unerwünschter Einträge im heise-Newsticker.
 3. Unter `Ausgeblendete Rubriken` regelmäßige Titel-Filter aktivieren.
 4. Die Änderungen werden automatisch gespeichert und direkt auf geöffneten heise-Seiten angewendet.
 
-Mit `Standard` werden die Standard-Kategorie-Filter wiederhergestellt und Rubrikfilter deaktiviert.
+Mit `Standard` werden alle bekannten Kategorien außer `heise online` und alle Rubrikfilter ausgeblendet.
 
 ## Installation zum Entwickeln
 

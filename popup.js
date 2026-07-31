@@ -84,17 +84,30 @@ async function loadPopup() {
   const stored = await storageGet({
     [STORAGE_KEYS.hiddenCategories]: DEFAULT_HIDDEN_CATEGORIES,
     [STORAGE_KEYS.hiddenTitleFilters]: DEFAULT_HIDDEN_TITLE_FILTERS,
-    [STORAGE_KEYS.knownCategories]: SEEDED_CATEGORIES
+    [STORAGE_KEYS.knownCategories]: SEEDED_CATEGORIES,
+    [STORAGE_KEYS.defaultSettingsVersion]: 0
   });
 
-  hiddenCategories = new Set(uniqueCategories(stored[STORAGE_KEYS.hiddenCategories]));
-  hiddenTitleFilters = new Set(uniqueTitleFilterIds(stored[STORAGE_KEYS.hiddenTitleFilters]));
+  const shouldApplyDefaultSettings = stored[STORAGE_KEYS.defaultSettingsVersion] !== DEFAULT_SETTINGS_VERSION;
+  hiddenCategories = new Set(uniqueCategories([
+    ...(shouldApplyDefaultSettings ? DEFAULT_HIDDEN_CATEGORIES : []),
+    ...stored[STORAGE_KEYS.hiddenCategories]
+  ]));
+  hiddenTitleFilters = new Set(uniqueTitleFilterIds([
+    ...(shouldApplyDefaultSettings ? DEFAULT_HIDDEN_TITLE_FILTERS : []),
+    ...stored[STORAGE_KEYS.hiddenTitleFilters]
+  ]));
   const categories = uniqueCategories([
     ...SEEDED_CATEGORIES,
     ...stored[STORAGE_KEYS.knownCategories]
   ]);
 
-  await storageSet({ [STORAGE_KEYS.knownCategories]: categories });
+  await storageSet({
+    [STORAGE_KEYS.hiddenCategories]: [...hiddenCategories],
+    [STORAGE_KEYS.hiddenTitleFilters]: [...hiddenTitleFilters],
+    [STORAGE_KEYS.knownCategories]: categories,
+    [STORAGE_KEYS.defaultSettingsVersion]: DEFAULT_SETTINGS_VERSION
+  });
   renderCategories(categories);
   renderTitleFilters();
 }
